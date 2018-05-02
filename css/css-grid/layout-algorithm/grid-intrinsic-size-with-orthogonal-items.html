@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Grid Layout Test: Compute the grid's intrinsic size when there are orthogonal items</title>
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-grid-1/#algo-overview">
+<link rel="help" href="https://drafts.csswg.org/css-writing-modes-4/#establish-an-orthogonal-flow">
+<meta name="assert" content="The test checks that grid's intrinsic width computed based on orthogonal items may lead to content overflow because of the estimated block-axis size used to determine child's min-content contribution.">
+<style>
+.grid {
+    display: inline-grid;
+    font: 25px/1 ahem;
+    background: green;
+    height: 150px;
+}
+
+.item { writing-mode: vertical-lr; }
+
+.minmax-100-200 { grid: minmax(100px, 200px) / auto; }
+.minmax-auto-200 { grid: minmax(100px, 200px) / auto; }
+.minmax-auto-100 { grid: minmax(auto, 100px) / auto; }
+.minmax-100-auto { grid: minmax(100px, auto) / auto; }
+.minmax-100-fitcontent { grid: minmax(100px, fit-content) / auto; }
+.minmax-100-1fr { grid: minmax(100px, 1fr) / auto; }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+<body onload="checkLayout('.grid')">
+
+<pre>rows: auto</pre>
+
+<div class="grid" data-expected-width="25" data-expected-height="150">
+    <div class="item" data-expected-width="75" data-expected-height="150">foo fo o bar ba r</div>
+</div>
+
+<pre>rows: minmax(100px, 200px)</pre>
+
+<div class="grid minmax-100-200" data-expected-width="50" data-expected-height="150">
+    <div class="item" data-expected-width="75" data-expected-height="150">foo fo o bar ba r</div>
+</div>
+
+<pre>rows: minmax(auto, 200px)</pre>
+
+<div class="grid minmax-auto-200" data-expected-width="50" data-expected-height="150">
+    <div class="item" data-expected-width="75" data-expected-height="150">foo fo o bar ba r</div>
+</div>
+
+<pre>rows: minmax(100px, auto)</pre>
+
+<div class="grid minmax-100-auto" data-expected-width="25" data-expected-height="150">
+    <div class="item" data-expected-width="75" data-expected-height="150">foo fo o bar ba r</div>
+</div>
+
+<pre>rows: minmax(auto, 100px)</pre>
+
+<div class="grid minmax-auto-100" data-expected-width="100" data-expected-height="150">
+    <div class="item" data-expected-width="100" data-expected-height="100">foo fo o bar ba r</div>
+</div>
+
+<pre>rows: minmax(100px, fit-content)</pre>
+
+<div class="grid minmax-auto-fitcontent" data-expected-width="25" data-expected-height="150">
+    <div class="item" data-expected-width="75" data-expected-height="150">foo fo o bar ba r</div>
+</div>
+
+<pre>rows: minmax(100px, 1fr)</pre>
+
+<div class="grid minmax-auto-1fr" data-expected-width="25">
+    <div class="item" data-expected-width="75" data-expected-height="150">foo fo o bar ba r</div>
+</div>
+
